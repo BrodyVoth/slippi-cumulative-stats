@@ -107,3 +107,4 @@ dist
 test
 *.slp
 replayCache.json
+replayCacheCharacters.json
