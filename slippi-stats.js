@@ -201,8 +201,8 @@ function processGame(file, i, gameData) {
         opponent_num = 'none'
         opponent_found = false
         ignored_opponent_found = false
-        player_names = [metadata.players[0].names.netplay, metadata.players[1].names.netplay]
-        player_codes = [metadata.players[0].names.code, metadata.players[1].names.code]
+        player_names = []
+        player_codes = []
         player_characters = [settings.players[0].characterId, settings.players[1].characterId]
 
 
