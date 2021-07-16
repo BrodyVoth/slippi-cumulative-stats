@@ -472,14 +472,16 @@ function printResults() {
         console.log(`| ${stage_results[i].stage}: ${stage_results[i].wins} wins in ${stage_results[i].games} games (${winrate}%) - ${playtime}`)
     }
 
-    console.log('------ NICKNAME RESULTS -------')
-    // Calculate and display nickname win rates
-    for (i in nickname_totals) {
-        wins = nickname_wins[i] || 0
-        games = nickname_totals[i]
-        winrate = ((wins / games) * 100).toFixed(2) || 0
-        playtime = secondsToHMS(nickname_playtime[i]) || '00:00:00'
-        console.log(`| ${i}: ${wins} wins in ${games} games (${winrate}%) - ${playtime}`)
+    if ((Object.keys(nickname_totals).length) > 1) {
+        console.log('------ NICKNAME RESULTS -------')
+        // Calculate and display nickname win rates
+        for (i in nickname_totals) {
+            wins = nickname_wins[i] || 0
+            games = nickname_totals[i]
+            winrate = ((wins / games) * 100).toFixed(2) || 0
+            playtime = secondsToHMS(nickname_playtime[i]) || '00:00:00'
+            console.log(`| ${i}: ${wins} wins in ${games} games (${winrate}%) - ${playtime}`)
+        }
     }
 
     if ((Object.keys(code_totals).length) > 1) {
