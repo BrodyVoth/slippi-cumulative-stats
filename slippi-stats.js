@@ -482,14 +482,16 @@ function printResults() {
         console.log(`| ${i}: ${wins} wins in ${games} games (${winrate}%) - ${playtime}`)
     }
 
-    console.log('------ CODE RESULTS -------')
-    // Calculate and display code win rates
-    for (i in code_totals) {
-        wins = code_wins[i] || 0
-        games = code_totals[i]
-        winrate = ((wins / games) * 100).toFixed(2) || 0
-        playtime = secondsToHMS(code_playtime[i]) || '00:00:00'
-        console.log(`| ${i}: ${wins} wins in ${games} games (${winrate}%) - ${playtime}`)
+    if ((Object.keys(code_totals).length) > 1) {
+        console.log('------ CODE RESULTS -------')
+        // Calculate and display code win rates
+        for (i in code_totals) {
+            wins = code_wins[i] || 0
+            games = code_totals[i]
+            winrate = ((wins / games) * 100).toFixed(2) || 0
+            playtime = secondsToHMS(code_playtime[i]) || '00:00:00'
+            console.log(`| ${i}: ${wins} wins in ${games} games (${winrate}%) - ${playtime}`)
+        }
     }
 
     if (!opponent_arg) {
