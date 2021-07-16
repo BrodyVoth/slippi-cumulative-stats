@@ -127,6 +127,9 @@ var character_playtime = []
 var nickname_totals = []
 var nickname_wins = []
 var nickname_playtime = []
+var code_totals = []
+var code_wins = []
+var code_playtime = []
 var opponent_totals = []
 var opponent_wins = []
 var opponent_playtime = []
@@ -385,6 +388,11 @@ function processResults(r) {
         nickname_playtime[r.player_name] = (nickname_playtime[r.player_name] + r.game_seconds) || r.game_seconds
     }
 
+    if (!!r.player_code) {
+        code_totals[r.player_code] = (code_totals[r.player_code] + 1) || 1
+        code_playtime[r.player_code] = (code_playtime[r.player_code] + r.game_seconds) || r.game_seconds
+    }
+
     if (!!r.opponent_code) {
         opponent_totals[r.opponent_code] = (opponent_totals[r.opponent_code] + 1) || 1
         opponent_playtime[r.opponent_code] = (opponent_playtime[r.opponent_code] + r.game_seconds) || r.game_seconds
@@ -401,6 +409,7 @@ function processResults(r) {
         character_head_to_head[r.player_character_num][r.opponent_character_num][2] = characters[r.opponent_character_num];
         character_head_to_head[r.player_character_num][r.opponent_character_num][0] = (character_head_to_head[r.player_character_num][r.opponent_character_num][0] + 1)
         nickname_wins[r.player_name] = (nickname_wins[r.player_name] + 1) || 1
+        code_wins[r.player_code] = (code_wins[r.player_code] + 1) || 1
         opponent_wins[r.opponent_code] = (opponent_wins[r.opponent_code] + 1) || 1
         stage_wins[r.stage_num] = (stage_wins[r.stage_num] + 1) || 1
     }
@@ -470,6 +479,16 @@ function printResults() {
         games = nickname_totals[i]
         winrate = ((wins / games) * 100).toFixed(2) || 0
         playtime = secondsToHMS(nickname_playtime[i]) || '00:00:00'
+        console.log(`| ${i}: ${wins} wins in ${games} games (${winrate}%) - ${playtime}`)
+    }
+
+    console.log('------ CODE RESULTS -------')
+    // Calculate and display code win rates
+    for (i in code_totals) {
+        wins = code_wins[i] || 0
+        games = code_totals[i]
+        winrate = ((wins / games) * 100).toFixed(2) || 0
+        playtime = secondsToHMS(code_playtime[i]) || '00:00:00'
         console.log(`| ${i}: ${wins} wins in ${games} games (${winrate}%) - ${playtime}`)
     }
 
