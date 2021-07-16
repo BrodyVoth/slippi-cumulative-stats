@@ -36,24 +36,26 @@ console.log('-------------------------------')
 console.log("| Script checks current folder and subfolders. Provide optional info if you want more specific stats")
 console.log('| Note: Replays with no player data (pre-July 2020) are skipped (but counted in overall playtime)')
 console.log('| Note: Your answers are not case-sensitive')
+console.log('| NEW: Search for multiple connect codes or nicknames by separating them with a comma')
 console.log('-------------------------------')
 const cache = loadCache()
 console.log('-------------------------------')
 
 if (!!cache.user_player_arg) {
-    user_player_arg = readlineSync.question(`Enter your connect code or nickname (Leave blank for ${cache.user_player_arg}): `, {defaultInput: cache.user_player_arg})
-    user_player = user_player_arg.toLowerCase()
+    user_player_arg = readlineSync.question(`Enter your connect code(s) or nickname(s) (Leave blank for ${cache.user_player_arg}): `, {defaultInput: cache.user_player_arg})
+    user_player = user_player_arg.toLowerCase().split(",")
+
 }
 else {
-    user_player_arg = readlineSync.question('Enter your connect code or nickname (Will be stored for next use): ')
-    user_player = user_player_arg.toLowerCase()
+    user_player_arg = readlineSync.question('Enter your connect code(s) or nickname(s) (Will be stored for next use): ')
+    user_player = user_player_arg.toLowerCase().split(",")
 }
 if (!user_player) {
     readlineSync.question(`You must enter a connect code (ex. ZIMP#721) or a nickname. Connect codes are preferred.`)
     process.exit()
 }
 
-const opponent_arg = readlineSync.question("Enter your opponent's code or nickname (Optional. Leave blank for all opponents): ") || false
+const opponent_arg = readlineSync.question("Enter your opponent's code(s) or nickname(s) (Optional. Leave blank for all opponents): ") || false
 const player_character_arg = readlineSync.question('Enter your character (Optional. Leave blank for all your characters): ') || false
 
 if (player_character_arg) {
@@ -97,10 +99,10 @@ function checkCharacter(character_param) {
     }
 }
 
-const ignored_arg = readlineSync.question("Enter any opponent's codes/names to skip, separated by a comma (Optional): ")
+const ignored_arg = readlineSync.question("Enter any opponent's codes/names to skip (Optional): ")
 
 if (opponent_arg) {
-    opponent_player = opponent_arg.toLowerCase().trim()
+    opponent_player = opponent_arg.toLowerCase().trim().split(",")
 }
 
 if (ignored_arg) {
@@ -224,8 +226,11 @@ function processGame(file, i, gameData) {
 
         for (j = 0; j < settings.players.length; j++) {
             if (opponent_arg) {
-                if (player_names[j].toLowerCase().trim() == opponent_player || player_codes[j].toLowerCase() == opponent_player) {
-                    opponent_found = true
+                for (k of opponent_player) {
+                    opponent = k.trim()
+                    if (player_names[j].toLowerCase().trim() == opponent || player_codes[j].toLowerCase() == opponent) {
+                        opponent_found = true
+                    }
                 }
             }
             if (ignored_arg) {
@@ -237,19 +242,25 @@ function processGame(file, i, gameData) {
                     }
                 }
             }
-            if (player_names[j].toLowerCase().trim() == user_player || player_codes[j].toLowerCase() == user_player) {
-                player_num = j
-            }
-            else {
-                opponent_num = j
+            for (k of user_player) {
+                if (player_names[j].toLowerCase().trim() == k || player_codes[j].toLowerCase() == k) {
+                    player_num = j
+                    if (player_num == 0) {
+                        opponent_num = 1
+                    }
+                    else {
+                        opponent_num = 0
+                    }
+                    break
+                }
             }
         }
         if (player_num == 'none') {
-            console.log(`${num}: ${user_player} missing. Ignoring... (${file})`)
+            console.log(`${num}: User(s) ${user_player} missing. Ignoring... (${file})`)
             return data
         }
         if (opponent_arg && !opponent_found) {
-            console.log(`${num}: ${opponent_player} missing. Ignoring... (${file})`)
+            console.log(`${num}: Opponent(s) ${opponent_player} missing. Ignoring... (${file})`)
             return data
         }
         if (ignored_arg && ignored_opponent_found) {
@@ -423,7 +434,7 @@ function printResults() {
     }
 
     console.log('\n------- OVERALL RESULTS -------')
-    opponent_arg ? console.log(`| ${final_player_name} (${real_player_code}) vs ${final_opponent_name} (${real_opponent_code})`) : console.log(`| ${final_player_name} (${real_player_code})`)
+    opponent_arg ? console.log(`| ${final_player_name} (${real_player_code}) vs ${final_opponent_name} (${real_opponent_code}) - Includes: ${user_player.join(", ")} vs ${opponent_player.join(", ")}`) : console.log(`| ${final_player_name} (${real_player_code}) - Includes: ${user_player.join(", ")}`)
     if (player_character_arg) { console.log(`| Player character: ${characters[characters_lowercase.indexOf(player_character_requested)]}`) }
     if (character_arg) { console.log(`| Opponent character: ${characters[characters_lowercase.indexOf(character_requested)]}`) }
     if (ignored_arg) { console.log(`| Ignored opponents: ${ignored_arg}`) }
